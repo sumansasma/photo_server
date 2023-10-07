@@ -99,7 +99,7 @@ app.delete('/delete-file/:id', (req, res) => {
 
 
 // Upload a photo and store its filename in the database
-app.post('https://photo-server-jxyh.onrender.com/upload', upload.single('photo'), (req, res) => {
+app.get('/upload', upload.single('photo'), (req, res) => {
     if (req.file) {
         const filename = req.file.filename;
         db.run('INSERT INTO photos (filename) VALUES (?)', [filename], (err) => {
