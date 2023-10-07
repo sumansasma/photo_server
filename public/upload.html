@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload and Delete Photos</title>
+</head>
+<body>
+    <h1>Upload and Delete Photos</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="photo" accept="image/*" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Uploaded Photos</h2>
+    <div id="photoContainer"></div>
+
+    <script>
+        // Function to load and display the uploaded photos
+        function loadUploadedFiles() {
+            fetch('/upload-files')
+                .then(response => response.json())
+                .then(data => {
+                    const photoContainer = document.getElementById('photoContainer');
+                    photoContainer.innerHTML = ''; // Clear the existing content
+                    data.forEach(photo => {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.className = 'photo-div';
+
+                        // Create an image element and set its attributes
+                        const imgElement = document.createElement('img');
+                        imgElement.src = `uploads/${photo.filename}`;
+                        imgElement.alt = 'Uploaded Photo';
+
+                        // Create a delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteFile(photo.id);
+
+                        // Append the image and delete button to the photoDiv
+                        photoDiv.appendChild(imgElement);
+                        photoDiv.appendChild(deleteButton);
+
+                        // Append the photoDiv to the photoContainer
+                        photoContainer.appendChild(photoDiv);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to delete a file by its ID
+        function deleteFile(fileId) {
+            console.log('Deleting file with ID:', fileId);
+            fetch(`/delete-file/${fileId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.status === 200) {
+                        console.log('File deleted successfully');
+                        // Reload the list of uploaded files
+                        loadUploadedFiles();
+                    } else if (response.status === 404) {
+                        console.log('File not found');
+                        // Handle file not found as needed
+                    } else {
+                        console.error('Error deleting file:', response.statusText);
+                        // Handle other errors as needed
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Load the uploaded files when the page loads
+        loadUploadedFiles();
+    </script>
+</body>
+</html>

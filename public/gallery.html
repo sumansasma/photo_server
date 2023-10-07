@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Photo Gallery</title>
+</head>
+
+<body>
+    <h1>Photo Gallery</h1>
+    <div id="photoContainer"></div>
+
+    <script>
+        // Use JavaScript to load and display the uploaded photos
+        fetch('/upload-files')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received from server:', data);
+                const photoContainer = document.getElementById('photoContainer');
+                data.forEach(filename => {
+                    console.log('photo.filename:', filename);
+                    const fileElement = document.createElement('div');
+                    // fileElement.id = `file-${id}`;
+                    fileElement.innerHTML = `
+                        <img src="uploads/${filename}" alt="Uploaded Photo">
+                    `;
+                    photoContainer.appendChild(fileElement);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+
+</html>
